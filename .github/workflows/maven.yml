@@ -25,7 +25,7 @@ jobs:
       run: mvn -B clean package --file pom.xml
       
     - name: Test command in runner
-      run: ls -la Karma-0.0.1.war
-      uses: actions/upload-artifact@v2
-      with:
-        path: /home/runner/work/karma/karma/target/Karma-0.0.1.war
+      run: ls -la /home/runner/work/karma/karma/target/
+    #  uses: actions/upload-artifact@v2
+    #  with:
+    #    path: /home/runner/work/karma/karma/target/Karma-0.0.1.war
