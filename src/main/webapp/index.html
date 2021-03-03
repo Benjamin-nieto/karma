@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Insert title here</title>
+
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css"
+	rel="stylesheet"
+	integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1"
+	crossorigin="anonymous">
+
+
+</head>
+<body>
+	<div class="container mt-4">
+
+		<table class="table">
+
+			<thead>
+				<tr>
+					<!-- 1...5 -->
+
+					<th>Id</th>
+					<th>User Name</th>
+					<th>Status User</th>
+					<th>Creation Date</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+
+			<tbody>
+				<tr th:each="user:${users}">
+					<!-- 1...5 -->
+					<td>${user.id}</td>
+					<td>${user.name}</td>
+					<td>${user.status}</td>
+					<td>${user.creationDate}</td>
+					<td>
+					<a class="btn"> Edit</a>
+					<a class="btn"> Delete</a>					
+					</td>
+				</tr>
+
+			</tbody>
+		</table>
+	</div>
+</body>
+</html>
