@@ -14,6 +14,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -67,6 +68,8 @@ public class DemoController {
 	@Autowired
 	private ConfigProperty configs;
 
+	private static List<File> files = new ArrayList<>();
+
 	@GetMapping("/")
 	public String testing() {
 		// service.registrar("foo");
@@ -77,26 +80,85 @@ public class DemoController {
 	@GetMapping("/api")
 	public String api() {
 		String ret = "Post /uploadfile/  -  key: file, type: body-file, value: file upload <br>";
-		ret = ret+"Get /cigee-galery/ - key: image, value: name-image-view <br>";
-		ret = ret+"Get /minio/info <br>";
-		ret = ret+"Get /minio/createBucket - key: name, value name-bucket-create <br>";
-		ret = ret+"Get /minio/list";
-		ret = ret+"Post /minio/uploadFile - key: bucket, value name-bucket-exist && key: name, value: name-file && key: file, type: body-file, value: file-upload";
-		ret = ret+"Get /minio/openFile - key: bucket, value: bucket-exist && key: name, value: name-to-preview";
-		
+		ret = ret + "Get /cigee-galery/ - key: image, value: name-image-view <br>";
+		ret = ret + "Get /minio/info <br>";
+		ret = ret + "Get /minio/createBucket - key: name, value name-bucket-create <br>";
+		ret = ret + "Get /minio/list";
+		ret = ret
+				+ "Post /minio/uploadFile - key: bucket, value name-bucket-exist && key: name, value: name-file && key: file, type: body-file, value: file-upload";
+		ret = ret + "Get /minio/openFile - key: bucket, value: bucket-exist && key: name, value: name-to-preview";
+
 		return ret;
 	}
 
+	@PostMapping("/uploadfile")
+	private String uploadFile(@RequestParam("directory") String directory, @RequestParam("file") MultipartFile file)
+			throws IllegalStateException, IOException {
 
-	@PostMapping("/uploadfile") 
-	private String uploadFile(@RequestParam("directory") String directory, @RequestParam("file") MultipartFile file) throws IllegalStateException, IOException {
+		File dir = new File(directory);
 
-		File dir = new File(directory);	
-			
-		upf.uploadFile(dir,file);
-		return "Upload file :"+file.getOriginalFilename()+""+" in directory "+dir;
+		upf.uploadFile(dir, file);
+		return "Upload file :" + file.getOriginalFilename() + "" + " in directory " + dir;
 
 	}
+
+	
+	@GetMapping("/list")
+	private String list(@RequestParam("directory") String directory) {
+		String print = null;
+		File file;
+		if (directory.isEmpty()) {
+			file = new File(configs.getUploadroot()); // ruta
+
+		} else {
+			file = new File(configs.getUploadroot().concat(File.separator).concat(directory)); // ruta
+		}
+		// File[] myfiles = file.listFiles();
+
+		List<File> myfiles = doListing(file); // array de archivos en ruta
+
+		for (File d : myfiles) {
+
+			print = print + d + "<br>";
+		}
+
+		return print;
+
+	}
+
+	public static List<File> doListing(File dirName) {
+
+		File[] fileList = dirName.listFiles();
+
+		for (File file : fileList) {
+
+			if (file.isFile()) {
+
+				files.add(file);
+			} else if (file.isDirectory()) {
+
+				files.add(file);
+				doListing(file);
+			}
+		}
+
+		return files;
+	}
+
+	@GetMapping("/delete")
+	private String delete(@RequestParam("file") String f) {
+		File file = new File(configs.getUploadroot().concat(File.separator).concat(f)); // ruta
+System.out.println(file);
+		if (file.exists()) {
+			file.delete();
+			return "File deleted";
+		} else {
+			return "File no surch";
+		}
+
+	}
+
+	///// ==========================================================
 
 	@GetMapping("/minio/info")
 	public String minioInfo() {
@@ -147,10 +209,11 @@ public class DemoController {
 	}
 
 	@PostMapping("/minio/uploadFile")
-	private Object minioUploadFile(@RequestParam("bucket") String bucket,@RequestParam("nombre") String name,@RequestParam("file") MultipartFile file) {
-		
-	//, @RequestParam("file") File file
-		Map<String,String> aux = new HashMap<>();
+	private Object minioUploadFile(@RequestParam("bucket") String bucket, @RequestParam("nombre") String name,
+			@RequestParam("file") MultipartFile file) {
+
+		// , @RequestParam("file") File file
+		Map<String, String> aux = new HashMap<>();
 //		
 //		name = "sql";
 //		ruta = "C:\\\\Users\\\\aspso\\\\Documents\\\\sql.txt";
@@ -167,70 +230,54 @@ public class DemoController {
 //		return "Upload file ";
 		MinioClient minioClient = MinioClient.builder().endpoint(configs.getEndpoint())
 				.credentials(configs.getAccesskey(), configs.getSecretkey()).build();
-		
+
 		try {
-			minioClient.putObject(
-				    PutObjectArgs.builder().bucket(bucket).object(name).stream(
-				    		file.getInputStream(), -1, 10485760).build());
+			minioClient.putObject(PutObjectArgs.builder().bucket(bucket).object(name)
+					.stream(file.getInputStream(), -1, 10485760).build());
 			aux.put("message", "Upload File ");
 			return aux;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} 
-		
+		}
+
 		return null;
 
 	}
-	
+
 	@GetMapping("/minio/downloadFile")
-	private String minioDownloadFile(@RequestParam("bucket") String bucket,@RequestParam("name") String name)	
+	private String minioDownloadFile(@RequestParam("bucket") String bucket, @RequestParam("name") String name)
 			throws IllegalStateException, IOException, InvalidKeyException, ErrorResponseException,
 			InsufficientDataException, InternalException, InvalidResponseException, NoSuchAlgorithmException,
 			ServerException, XmlParserException, IllegalArgumentException {
-		
+
 		String file;
 		name = "sql";
 		file = "C:\\Users\\aspso\\Downloads\\sql.txt";
-		
-		
+
 		MinioClient minioClient = MinioClient.builder().endpoint(configs.getEndpoint())
 				.credentials(configs.getAccesskey(), configs.getSecretkey()).build();
 
-		minioClient.downloadObject(
-				  DownloadObjectArgs.builder()
-				  .bucket(bucket)
-				  .object(name)
-				  .filename(file)
-				  .build());
-		
-		return "Download file, "+name;
+		minioClient.downloadObject(DownloadObjectArgs.builder().bucket(bucket).object(name).filename(file).build());
+
+		return "Download file, " + name;
 
 	}
 
 	@GetMapping("/minio/openFile")
 	private void openFile(@RequestParam("bucket") String bucket, @RequestParam("name") String name,
-			HttpServletResponse response)
-			throws IllegalStateException, IOException, InvalidKeyException, ErrorResponseException,
-			InsufficientDataException, InternalException, InvalidResponseException, NoSuchAlgorithmException,
-			ServerException, XmlParserException, IllegalArgumentException {
-
+			HttpServletResponse response) throws IllegalStateException, IOException, InvalidKeyException,
+			ErrorResponseException, InsufficientDataException, InternalException, InvalidResponseException,
+			NoSuchAlgorithmException, ServerException, XmlParserException, IllegalArgumentException {
 
 		MinioClient minioClient = MinioClient.builder().endpoint(configs.getEndpoint())
 				.credentials(configs.getAccesskey(), configs.getSecretkey()).build();
-		
-		InputStream stream = minioClient.getObject(
-				  GetObjectArgs.builder()
-				  .bucket(bucket)
-				  .object(name)
-				  .build());
 
+		InputStream stream = minioClient.getObject(GetObjectArgs.builder().bucket(bucket).object(name).build());
 
 		IOUtils.copy(stream, response.getOutputStream());
 		stream.close();
 
 	}
-	
-	
 
 }

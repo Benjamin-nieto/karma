@@ -16,11 +16,11 @@ public class FileUploadService {
 	private ConfigProperty cs;
 
 	public void uploadFile(File dir, MultipartFile file) throws IllegalStateException, IOException {
-		String aux = cs.getUploadroot().concat(dir.getName());
+		String aux = cs.getUploadroot().concat(File.separator).concat(dir.getName());
 		System.out.println(aux);
 		File nfile = new File(aux);
 		if (!nfile.exists()) {
-			nfile.mkdir();
+		nfile.mkdir();
 		}
 		
 		file.transferTo(new File(aux +File.separator+ file.getOriginalFilename()));
