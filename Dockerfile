@@ -5,7 +5,7 @@ RUN mv /tmp/target/Karmas-0.0.1.war /tmp/target/cigee.war
 
 FROM tomcat:jdk8-openjdk-slim-buster
 COPY --from=mvn-build /tmp/target/cigee.war /usr/local/tomcat/webapps/cigee.war
-WORKDIR /usr/local/tomcat/bin
+WORKDIR /usr/local/tomcat/webapps
 
 ## docker build -t cigee-galery -f Dockerfile .
 ## docker run -dit -p 8084 --name cogee -v ${PWD}/cigee-galery:/cigee-galery 
