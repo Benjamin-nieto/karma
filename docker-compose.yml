@@ -1,0 +1,11 @@
+version: "3"
+services:
+  server:
+    build: .
+    ports:
+       - "8084:8080"
+    volumes:
+       - data:/usr/local/tomcat/webapps/cigee/openfile
+
+volumes:
+   data:

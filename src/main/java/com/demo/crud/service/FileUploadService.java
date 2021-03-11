@@ -15,8 +15,15 @@ public class FileUploadService {
 	@Autowired
 	private ConfigProperty cs;
 
-	public void uploadFile(MultipartFile file) throws IllegalStateException, IOException {
-		file.transferTo(new File(cs.getUploadroot() + file.getOriginalFilename()));
+	public void uploadFile(File dir, MultipartFile file) throws IllegalStateException, IOException {
+		String aux = cs.getUploadroot().concat(dir.getName());
+		System.out.println(aux);
+		File nfile = new File(aux);
+		if (!nfile.exists()) {
+			nfile.mkdir();
+		}
+		
+		file.transferTo(new File(aux +File.separator+ file.getOriginalFilename()));
 	}
 
 }

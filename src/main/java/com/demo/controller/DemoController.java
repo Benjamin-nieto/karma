@@ -22,6 +22,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.hibernate.param.CollectionFilterKeyParameterSpecification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,7 @@ import io.minio.errors.InvalidResponseException;
 import io.minio.errors.ServerException;
 import io.minio.errors.XmlParserException;
 import io.minio.messages.Bucket;
+import javassist.expr.NewArray;
 
 @RestController
 @RequestMapping("/")
@@ -87,9 +89,12 @@ public class DemoController {
 
 
 	@PostMapping("/uploadfile") 
-	private String uploadFile(@RequestParam("file") MultipartFile file) throws IllegalStateException, IOException {
-		upf.uploadFile(file);
-		return "Upload file " + file.getName();
+	private String uploadFile(@RequestParam("directory") String directory, @RequestParam("file") MultipartFile file) throws IllegalStateException, IOException {
+
+		File dir = new File(directory);	
+			
+		upf.uploadFile(dir,file);
+		return "Upload file :"+file.getOriginalFilename()+""+" in directory "+dir;
 
 	}
 
