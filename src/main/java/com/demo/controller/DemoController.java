@@ -102,7 +102,6 @@ public class DemoController {
 
 	}
 
-	
 	@GetMapping("/list")
 	private String list(@RequestParam("directory") String directory) {
 		String print = null;
@@ -148,7 +147,7 @@ public class DemoController {
 	@GetMapping("/delete")
 	private String delete(@RequestParam("file") String f) {
 		File file = new File(configs.getUploadroot().concat(File.separator).concat(f)); // ruta
-System.out.println(file);
+		System.out.println(file);
 		if (file.exists()) {
 			file.delete();
 			return "File deleted";
