@@ -1,0 +1,11 @@
+version: "3"
+services:
+  server:
+    build: .
+      #dockerfile: Dockerfile
+      #image: registry.aspsols.com/cigee-galery:latest
+    ports:
+       - "8084:8080"
+    #volumes:
+    #   - ${pwd}/data:/usr/local/tomcat/webapps/cigee-galery
+

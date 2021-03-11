@@ -75,6 +75,13 @@ public class DemoController {
 		return "ONLINE";
 	}
 
+	@GetMapping("/api")
+	public String api() {
+		String ret = "Post /uploadfile/  -  key: file, type: body-file, value: file upload <br>";
+		ret = ret+"Get /cigee-galery/ - key: image, value: name-image-view <br>";
+		return ret;
+	}
+	
 	@GetMapping("/msg/testing")
 	public String msgTesting() {
 
