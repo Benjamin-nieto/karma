@@ -21,7 +21,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		//http.authorizeRequests().antMatchers("/**").fullyAuthenticated().and().httpBasic();
 		//http.authorizeRequests().antMatchers("/msg/**").fullyAuthenticated().and().httpBasic();
 
-		http.authorizeRequests().anyRequest().fullyAuthenticated().and().httpBasic();
+		//http.authorizeRequests().anyRequest().fullyAuthenticated().and().httpBasic();
 			
 	}
 
