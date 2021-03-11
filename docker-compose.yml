@@ -5,7 +5,7 @@ services:
     ports:
        - "8084:8080"
     volumes:
-       - data:/usr/local/tomcat/webapps/cigee-openfile:ro
+       - data:/usr/local/tomcat/webapps/cigee-openfile
 
 volumes:
    data:
