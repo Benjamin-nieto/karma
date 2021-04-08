@@ -13,6 +13,7 @@ public class ConfigProperty {
 	private String endpoint;
 	private String accesskey;
 	private String secretkey;
+	
 	public String getUploadroot() {
 		return uploadroot;
 	}

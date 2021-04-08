@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -19,6 +20,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -27,6 +30,9 @@ import org.hibernate.param.CollectionFilterKeyParameterSpecification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ScannedGenericBeanDefinition;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -78,17 +84,32 @@ public class DemoController {
 	}
 
 	@GetMapping("/api")
-	public String api() {
-		String ret = "Post /uploadfile/  -  key: file, type: body-file, value: file upload <br>";
-		ret = ret + "Get /cigee-galery/ - key: image, value: name-image-view <br>";
-		ret = ret + "Get /minio/info <br>";
-		ret = ret + "Get /minio/createBucket - key: name, value name-bucket-create <br>";
-		ret = ret + "Get /minio/list";
-		ret = ret
-				+ "Post /minio/uploadFile - key: bucket, value name-bucket-exist && key: name, value: name-file && key: file, type: body-file, value: file-upload";
-		ret = ret + "Get /minio/openFile - key: bucket, value: bucket-exist && key: name, value: name-to-preview";
+	public String api() throws IOException {
+		String ret = "";
 
+		File r = ResourceUtils.getFile("classpath:json/api.json");
+		if (r.exists()) {
+			System.out.println(r.getAbsolutePath());
+			ret = printFile(r);
+		}
 		return ret;
+	}
+
+	private static String printFile(File file) {
+		String d = "";
+		List<String> lines;
+		try {
+			lines = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
+
+			for (String str : lines) {
+				d = d + str;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return d;
+
 	}
 
 	@PostMapping("/uploadfile")
@@ -102,9 +123,11 @@ public class DemoController {
 
 	}
 
+	
+	
 	@GetMapping("/list")
 	private String list(@RequestParam("directory") String directory) {
-		String print = null;
+		String print = "[";
 		File file;
 		if (directory.isEmpty()) {
 			file = new File(configs.getUploadroot()); // ruta
@@ -112,34 +135,47 @@ public class DemoController {
 		} else {
 			file = new File(configs.getUploadroot().concat(File.separator).concat(directory)); // ruta
 		}
-		// File[] myfiles = file.listFiles();
 
-		List<File> myfiles = doListing(file); // array de archivos en ruta
-
-		for (File d : myfiles) {
-
-			print = print + d + "<br>";
+		try {
+			file.canRead();
+		} catch (Exception e) {
+			LOG.warn(e.toString() + " Error read file!!!");
 		}
 
-		return print;
+		File[] a = file.listFiles();
+		if (a.length >= 1) {
+			for (File file2 : a) {
 
+				print = print + "{'object':'" + file2 + "'},";
+			}
+
+			print = print.substring(0, print.length() - 1);
+		}
+
+		return print + "]";
 	}
 
 	public static List<File> doListing(File dirName) {
 
-		File[] fileList = dirName.listFiles();
+		// File[] fileList = dirName.listFiles();
 
-		for (File file : fileList) {
+		String[] pathnames = dirName.list();
 
-			if (file.isFile()) {
-
-				files.add(file);
-			} else if (file.isDirectory()) {
-
-				files.add(file);
-				doListing(file);
-			}
+		// For each pathname in the pathnames array
+		for (String pathname : pathnames) {
+			// Print the names of files and directories
+			System.out.println(pathname);
 		}
+
+		/*
+		 * for (File file : fileList) {
+		 * 
+		 * if (file.isFile()) {
+		 * 
+		 * files.add(file); } else if (file.isDirectory()) {
+		 * 
+		 * files.add(file); doListing(file); } }
+		 */
 
 		return files;
 	}
