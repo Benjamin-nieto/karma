@@ -1,5 +1,5 @@
-[{"method": "Post", "access": "/uploadfile/","description":"key: file, type: body-file, value: file upload"},
-{"method": "Get","access": "/cigee-galery/","description":"key: image, value: name-image-view"},
+[{"method": "Post", "access": "/uploadfile","description":"key: file, type: body-file, value: file upload"},
+{"method": "Get","access": "/openfile","description":"key: image, value: name-image-view"},
 {"method": "Get", "access": "/minio/info","description":"info"},
 {"method": "Get", "access": "/minio/createBucket","description": "key: name, value name-bucket-create"},
 {"method": "Get", "access": "/minio/list","description":"lista de archivos en el bucket"},
