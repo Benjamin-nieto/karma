@@ -89,7 +89,7 @@ public class DemoController {
 
 		File r = ResourceUtils.getFile("classpath:json/api.json");
 		if (r.exists()) {
-			System.out.println(r.getAbsolutePath());
+			//System.out.println(r.getAbsolutePath());
 			ret = printFile(r);
 		}
 		return ret;
@@ -119,7 +119,7 @@ public class DemoController {
 		File dir = new File(directory);
 
 		upf.uploadFile(dir, file);
-		return "Upload file :" + file.getOriginalFilename() + "" + " in directory " + dir;
+		return "Upload file: " + file.getOriginalFilename() + "" + " in directory " + dir+" and size "+file.getSize()+" bytes";
 
 	}
 
@@ -183,10 +183,9 @@ public class DemoController {
 	@GetMapping("/delete")
 	private String delete(@RequestParam("file") String f) {
 		File file = new File(configs.getUploadroot().concat(File.separator).concat(f)); // ruta
-		System.out.println(file);
 		if (file.exists()) {
 			file.delete();
-			return "File deleted";
+			return "File deleted "+file;
 		} else {
 			return "File no surch";
 		}
