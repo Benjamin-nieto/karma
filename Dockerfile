@@ -3,7 +3,8 @@ COPY . /tmp/
 RUN cd /tmp/ && mvn clean package -DskipTests
 RUN mv /tmp/target/Karmas-0.0.1.war /tmp/target/ROOT.war
 
-FROM tomcat:jdk8-openjdk-slim-buster
+# old 2021/jun/21 - tomcat:jdk8-openjdk-slim-buster
+FROM registry.aspsols.com/aspsols/tomcatssl:latest
 COPY --from=mvn-build /tmp/target/ROOT.war /usr/local/tomcat/webapps/ROOT.war
 WORKDIR /usr/local/tomcat/webapps
 
